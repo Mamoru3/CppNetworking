@@ -34,3 +34,5 @@
 # Misc
 *.ipch
 *.pdb
+*.vsidx
+*.suo
