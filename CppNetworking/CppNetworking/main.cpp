@@ -1,7 +1,4 @@
-#include <winsock2.h>
-#include <cstdio>
-#include <ws2tcpip.h>
-#include <Windows.h>
+#include "stdfax.h"
 #pragma comment(lib,"WS2_32")
 int main()
 {
@@ -24,7 +21,6 @@ int main()
 
 	//Winsock successfully started!
 	printf("Winsock 2.2 available an WSAStartup successful! ");		
-
 
 
 
