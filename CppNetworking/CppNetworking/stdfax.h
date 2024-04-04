@@ -5,3 +5,5 @@
 #include <ws2tcpip.h>
 #include <Windows.h>
 #include <cstdint>
+#include <sys/types.h>
+#include <string>
