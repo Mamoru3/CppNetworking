@@ -1,0 +1,13 @@
+﻿  main.cpp
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(53,19): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'WCHAR *'
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(53,19): message : consider using '%ls' in the format string
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(53,19): message : consider using '%lls' in the format string
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(53,19): message : consider using '%Ls' in the format string
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(53,19): message : consider using '%ws' in the format string
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(59,23): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(65,6): warning C4312: 'reinterpret_cast': conversion from 'int' to 'char *' of greater size
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(41,12): warning C4101: 'sin_size': unreferenced local variable
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(40,26): warning C4101: 'their_addr': unreferenced local variable
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(43,7): warning C4101: 's': unreferenced local variable
+C:\Work\Programming\CppNetworking\CppNetworking\CppNetworking\main.cpp(38,14): warning C4101: 'new_fd': unreferenced local variable
+  CppNetworking.vcxproj -> C:\Work\Programming\CppNetworking\CppNetworking\x64\Debug\CppNetworking.exe

@@ -1,5 +1,18 @@
 #include "stdfax.h"
 #pragma comment(lib,"WS2_32")
+
+#define LISTENPORT "3490"		//Port users will connect to 
+#define PENDINGCONNECTIONS 10	//How many pending connections can be in the queue
+
+void* get_in_addr(struct sockaddr* sa)
+{
+	if (sa->sa_family == AF_INET)
+	{
+		return &(((struct sockaddr_in*)sa)->sin_addr);
+	}
+	return &(((struct sockaddr_in6*)sa)->sin6_addr);
+
+}
 int main(int argc, char* argv[])
  {
 	WSADATA wsaData;
@@ -22,50 +35,60 @@ int main(int argc, char* argv[])
 	//Winsock successfully started!
 	printf("Winsock 2.2 available and WSAStartup successful! \n");
 
+	int sockfd, new_fd; //listen for new connections on sock_fd, accept new connections on new_fd
+	struct addrinfo hints, *servinfo, *p;
+	struct sockaddr_storage their_addr; //connector's address information
+	socklen_t sin_size;
+	int yes = 1;
+	char s[INET_ADDRSTRLEN];
+	int rv;
 
-	 struct addrinfo hints, * res, * p;
-	 int status;
-	 char ipstr[INET6_ADDRSTRLEN];
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE; //this uses local (my) ip
 	
-		 memset(&hints, 0, sizeof hints);
-	 hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
-	 hints.ai_socktype = SOCK_STREAM;
-	
-		 if ((status = getaddrinfo(argv[1], NULL, &hints, &res)) != 0) {
-		 fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-		 return 2;
-		
+	if ((rv = getaddrinfo(NULL, LISTENPORT, &hints, &servinfo)) != 0)		//Get address info of local machine passing the previously initialized hints struct, save it in servinfo
+	{
+		fprintf(stderr, "getaddrinfo %s \n", gai_strerror(rv));
+		return 1;
 	}
-	
-		 printf("IP addresses for %s:\n\n", argv[1]);
-	
-		 for (p = res; p != NULL; p = p->ai_next)
-		 {
-			 void* addr;
-			const char* ipver;
 
-			 // get the pointer to the address itself,
-			 // different fields in IPv4 and IPv6:
-			 if (p->ai_family == AF_INET) { // IPv4
-				 struct sockaddr_in* ipv4 = (struct sockaddr_in*)p->ai_addr;
-				 addr = &(ipv4->sin_addr);
-				 ipver = "IPv4";
+	for (p = servinfo; p != NULL; p = p->ai_next)	//Loop through all servinfo and bind to the first one possible
+	{
+		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
+		{
+			perror("server: socket");
+			continue;
+		}
+		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(yes), sizeof(int)) == -1)
+		{
+			perror("setsockopt");
+			exit(1);
+		}
+		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+		{
+			closesocket(sockfd);
+			perror("server: bind");
+			continue;
+		}
+		break;		
+	}
 
-			 }
-			 else { // IPv6
-				 struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)p->ai_addr;
-				 addr = &(ipv6->sin6_addr);
-				 ipver = "IPv6";
+	freeaddrinfo(servinfo);
 
-			 }
+	if (p == NULL)
+	{
+		fprintf(stderr, "server: failed to bind\n");
+		exit(1);
+	}
 
-			 // convert the IP to a string and print it:
-			 inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-			 printf(" %s: %s\n", ipver, ipstr);
+	if (listen(sockfd, PENDINGCONNECTIONS) == -1)
+	{
+		perror("listen");
+		exit(1);
+	}
 
-		 }
-	
-		 freeaddrinfo(res); // free the linked list
-	
-		 return 0;
+	//CONTINUE
+	return 0;
 }
